@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Learning Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .chat-message {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator {
+            display: none;
+        }
+        .typing-indicator.show {
+            display: flex;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">?? C++ Learning Chatbot</h1>
+            <p class="text-blue-200">Your friendly assistant for learning C++ programming</p>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+                        <span class="text-2xl">??</span>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">C++ Bot</h3>
+                        <p class="text-blue-100 text-sm">Online • Ready to help</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="h-96 overflow-y-auto p-4 space-y-4">
+                <div class="chat-message flex items-start">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <span class="text-white text-sm">??</span>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-3 max-w-xs">
+                        <p class="text-gray-800">Hello! I'm your C++ learning assistant. Type "hello" to get started, or ask me about C++ topics!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator items-center p-4">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                    <span class="text-white text-sm">??</span>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-3">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="border-t p-4">
+                <div class="flex space-x-2">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Type your message here..." 
+                        class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button 
+                        onclick="sendMessage()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                    >
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-6 text-center">
+            <p class="text-blue-200 mb-3">Quick actions:</p>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="quickMessage('hello')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Say Hello</button>
+                <button onclick="quickMessage('what is c++')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">What is C++?</button>
+                <button onclick="quickMessage('show materials')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Show Materials</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cppMaterials = [
+            {
+                title: "Contoh Program Sederhana C++",
+                description: "Program dasar dengan using namespace std dan cout",
+                code: `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Halo, Dunia!" << endl;
+    return 0;
+}`
+            },
+            {
+                title: "Contoh Dasar Program C++",
+                description: "Program dasar tanpa using namespace std",
+                code: `#include <iostream>
+
+int main()
+{
+    std::cout<<"Selamat Datang Di Belajar C++";
+    return 0;	
+}`
+            },
+            {
+                title: "Cetak Hello World dengan Printf",
+                description: "Menggunakan printf untuk output",
+                code: `#include <iostream>
+
+int main()
+{
+    printf("hello world");
+    return 0;
+}
+
+// Catatan: printf bisa langsung digunakan
+// printf("hello world");`
+            },
+            {
+                title: "Cetak Hello World dengan std::cout",
+                description: "Menggunakan std::cout tanpa namespace",
+                code: `#include <iostream>
+
+int main()
+{
+    std::cout<<"hello world";
+    return 0;
+}`
+            },
+            {
+                title: "Cetak Hello World dengan using namespace std",
+                description: "Menggunakan cout dengan namespace std",
+                code: `#include <iostream>
+
+using namespace std;
+int main()
+{
+    cout<<"hello world";
+    return 0;
+}`
+            },
+            {
+                title: "Menentukan Jenis Segitiga",
+                description: "Program untuk mengklasifikasi jenis segitiga",
+                code: `#include <iostream>
+using namespace std;
+int main() {
+    int a,b,c;
+    cin>>a>>b>>c;
+    if ((a>=b+c)||(b>=a+c)||(c>=a+b))
+        cout<<"Bukan Segitiga";
+    else if ((a==b)&&(b==c))
+        cout<<"Segitiga Sama Sisi";
+    else if ((a==b)||(b==c)||(a==c))
+        cout<<"Segitiga Sama Kaki";
+    else
+        cout<<"Segitiga Sembarang";
+    return 0;
+    // system("pause"); // untuk tampilan lama window .exe
+}`
+            }
+        ];
+
+        function addMessage(message, isUser = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message flex items-start';
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="flex-1"></div>
+                    <div class="bg-blue-600 text-white rounded-lg p-3 max-w-xs ml-auto">
+                        <p>${message}</p>
+                    </div>
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                        <span class="text-white text-sm">??</span>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <span class="text-white text-sm">??</span>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg p-3 max-w-2xl">
+                        ${message}
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').classList.add('show');
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').classList.remove('show');
+        }
+
+        function getBotResponse(userMessage) {
+            const message = userMessage.toLowerCase().trim();
+            
+            if (message.includes('hello') || message.includes('hi') || message.includes('halo')) {
+                return `<p class="text-gray-800">Hello! ?? Selamat datang di C++ Learning Bot!</p>
+                        <p class="text-gray-800 mt-2">Saya bisa membantu Anda belajar C++ dengan:</p>
+                        <ul class="text-gray-800 mt-2 list-disc list-inside">
+                            <li>Menjelaskan apa itu C++</li>
+                            <li>Menampilkan materi pembelajaran C++</li>
+                            <li>Memberikan contoh kode program</li>
+                        </ul>
+                        <p class="text-gray-800 mt-2">Ketik "what is c++" atau "show materials" untuk mulai belajar!</p>`;
+            }
+            
+            if (message.includes('what is c++') || message.includes('apa itu c++') || message.includes('c++ adalah')) {
+                return `<div class="text-gray-800">
+                            <h4 class="font-bold text-lg mb-2">?? Apa itu C++?</h4>
+                            <p class="mb-2">C++ adalah bahasa pemrograman yang dikembangkan oleh Bjarne Stroustrup di Bell Labs pada tahun 1979 sebagai pengembangan dari bahasa C.</p>
+                            <p class="mb-2"><strong>Karakteristik C++:</strong></p>
+                            <ul class="list-disc list-inside mb-2">
+                                <li>Bahasa pemrograman tingkat menengah</li>
+                                <li>Mendukung pemrograman berorientasi objek (OOP)</li>
+                                <li>Memiliki performa yang tinggi</li>
+                                <li>Dapat digunakan untuk sistem, game, aplikasi desktop</li>
+                                <li>Memiliki kontrol memori yang baik</li>
+                            </ul>
+                            <p>Ketik "show materials" untuk melihat materi pembelajaran!</p>
+                        </div>`;
+            }
+            
+            if (message.includes('show materials') || message.includes('materi') || message.includes('materials')) {
+                let materialsHtml = `<div class="text-gray-800">
+                                        <h4 class="font-bold text-lg mb-3">?? Materi Dasar C++</h4>`;
+                
+                cppMaterials.forEach((material, index) => {
+                    materialsHtml += `
+                        <div class="mb-4 border-l-4 border-blue-500 pl-3">
+                            <h5 class="font-semibold text-blue-700">${index + 1}. ${material.title}</h5>
+                            <p class="text-sm text-gray-600 mb-2">${material.description}</p>
+                            <div class="code-block text-sm">${material.code}</div>
+                        </div>
+                    `;
+                });
+                
+                materialsHtml += `</div>`;
+                return materialsHtml;
+            }
+            
+            if (message.includes('thanks') || message.includes('terima kasih') || message.includes('thank you')) {
+                return `<p class="text-gray-800">Sama-sama! ?? Senang bisa membantu Anda belajar C++. Jika ada pertanyaan lain, jangan ragu untuk bertanya!</p>`;
+            }
+            
+            // Default response
+            return `<div class="text-gray-800">
+                        <p class="mb-2">Maaf, saya belum mengerti pertanyaan Anda. ??</p>
+                        <p class="mb-2">Saya bisa membantu dengan:</p>
+                        <ul class="list-disc list-inside">
+                            <li>Menjelaskan tentang C++ (ketik: "what is c++")</li>
+                            <li>Menampilkan materi pembelajaran (ketik: "show materials")</li>
+                            <li>Menyapa Anda (ketik: "hello")</li>
+                        </ul>
+                    </div>`;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            
+            // Simulate bot thinking time
+            setTimeout(() => {
+                hideTyping();
+                const botResponse = getBotResponse(message);
+                addMessage(botResponse, false);
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function quickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Focus on input when page loads
+        window.onload = function() {
+            document.getElementById('messageInput').focus();
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9789d0353286fd9b',t:'MTc1Njc4MjYxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
+
